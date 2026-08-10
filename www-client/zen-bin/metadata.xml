@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>riverknuuttila2@outlook.com</email>
+		<name>River Knuuttila</name>
+	</maintainer>
+	<longdescription lang="en">
+		Zen Browser is a Firefox-based web browser aimed at calm, focused and
+		productive browsing. It ships a workspace and split-view oriented
+		interface, extensive theming, and is compatible with Firefox sync and
+		Firefox add-ons. This package installs the official upstream binary
+		build; the in-browser updater is disabled because Portage owns updates.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">zen-browser/desktop</remote-id>
+		<bugs-to>https://github.com/zen-browser/desktop/issues</bugs-to>
+	</upstream>
+</pkgmetadata>
