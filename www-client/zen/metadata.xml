@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>riverknuuttila2@outlook.com</email>
+		<name>River Knuuttila</name>
+	</maintainer>
+	<longdescription lang="en">
+		Zen Browser is a Firefox-based web browser aimed at calm, focused and
+		productive browsing. This package compiles Zen from source (Firefox
+		platform plus Zen's patches) with the system toolchain. The source
+		tree is pre-baked outside the Portage sandbox by scripts/bake-engine.sh
+		because Zen's patch application tool (surfer) needs pnpm and network
+		access; compilation itself happens entirely inside the sandbox.
+		Blocks www-client/zen-bin, which owns the same install paths.
+	</longdescription>
+	<use>
+		<flag name="clang">Force building with the LLVM/Clang toolchain and the lld linker</flag>
+		<flag name="geckodriver">Build and install the geckodriver WebDriver implementation</flag>
+		<flag name="hardened">Enable Mozilla's runtime hardening and full RELRO/BIND_NOW</flag>
+		<flag name="jumbo-build">Enable unified compilation of source files (faster build, more memory)</flag>
+		<flag name="lto">Build with cross-language link-time optimization</flag>
+		<flag name="pgo">Add a second build pass to optimize with a profile generated under Xvfb (roughly doubles build time and disk use)</flag>
+		<flag name="screencast">Pull in <pkg>media-video/pipewire</pkg> for screen sharing / WebRTC screen capture</flag>
+		<flag name="system-ffmpeg">Build the ffmpeg decode glue and pull in <pkg>media-video/ffmpeg</pkg> (dlopened at runtime); disabling removes h264/aac/etc. playback</flag>
+		<flag name="vaapi">Pull in <pkg>media-libs/libva</pkg> and default media.ffmpeg.vaapi.enabled to true for hardware video decoding</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">zen-browser/desktop</remote-id>
+		<bugs-to>https://github.com/zen-browser/desktop/issues</bugs-to>
+	</upstream>
+</pkgmetadata>

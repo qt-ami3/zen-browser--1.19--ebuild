@@ -66,6 +66,45 @@ sudo emerge -av =www-client/zen-bin-1.21.13b
 ebuild, and regenerates the Manifest. The old ebuild is kept until you've confirmed the new one
 works — delete it and re-run `bump.sh` afterwards.
 
+## Backups
+
+Upgrading Zen migrates the profile schema **one way**. Once 1.21.12b has opened `~/.config/zen`,
+the older 1.21.8b build will refuse to load it — each profile's `compatibility.ini` records the
+last version that touched it. So rolling back means restoring the profile *and* the matching
+browser tree together, which is what `zen-backup.sh` captures.
+
+```sh
+./scripts/zen-backup.sh backup --label pre-emerge   # close Zen first
+./scripts/zen-backup.sh list
+./scripts/zen-backup.sh verify latest
+./scripts/zen-backup.sh restore <snapshot>          # destructive, prompts
+./scripts/zen-backup.sh prune --keep 5              # destructive, prompts
+```
+
+Captured: `~/.config/zen` (profile), `~/.tarball-installations/zen`, `~/.local/bin/zen`, and any
+`*zen*` desktop entries. Snapshots land in `$ZEN_BACKUP_DIR`, default
+`~/.local/share/zen-snapshots`; a full one is ~400 MB and takes a couple of seconds.
+
+Two things are deliberately **not** captured:
+
+- `~/.cache/zen` — 1.2 GB and fully regenerable.
+- `/opt/zen` — portage's, reproducible via `emerge`, and partly root-only (`pingsender` is
+  `0750 root:root`, so a user-run `tar` cannot read it and the whole snapshot would abort).
+  `meta.txt` records the merged version and the exact `emerge` line to restore it instead.
+
+Safety properties worth knowing:
+
+- **Refuses to run while Zen is open.** The profile's SQLite databases have open write-ahead logs,
+  so a snapshot taken live can restore to a corrupt or stale profile. `--allow-running` overrides
+  and marks the snapshot untrustworthy.
+- `restore` takes an **automatic pre-restore snapshot** first, then **moves** the live directories
+  aside as `*.replaced-<timestamp>` instead of deleting them — so a bad restore is still undoable.
+- Every snapshot carries `SHA256SUMS`; `restore` refuses on a mismatch.
+- An interrupted or failed backup **deletes its own partial snapshot** rather than leaving a
+  half-written one that `list` would advertise and `restore` would trust.
+- `meta.txt` records whether Zen was running during capture, so months later you can still tell
+  whether a given snapshot is trustworthy.
+
 ## Layout
 
 ```
@@ -73,6 +112,7 @@ metadata/layout.conf          masters=gentoo, thin manifests
 profiles/repo_name            "zen"
 scripts/install-overlay.sh    register with portage (idempotent)
 scripts/bump.sh               one-command release bump
+scripts/zen-backup.sh         snapshot / restore profile + browser tree
 scripts/remove-old-zen.sh     DESTRUCTIVE — retires the abandoned source-build attempt
 www-client/zen-bin/           the ebuild, metadata.xml, files/, Manifest
 ```
